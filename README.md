@@ -1,4 +1,4 @@
-# エア馬券大会システム
+# ABOS — Air Baken On Spreadsheets
 
 Google Apps Script（GAS）・Googleスプレッドシート・Python・Discordを組み合わせた、**ポイント制の架空馬券大会を運営する個人開発プロジェクト**です。実際のお金による投票や決済を行うものではありません。
 
