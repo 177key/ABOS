@@ -1,0 +1,1476 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <base target="_top">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f2f5f9;
+      color: #243247;
+      font-family: system-ui, sans-serif;
+    }
+    .container {
+      max-width: 600px;
+      margin: 24px auto;
+      padding: 0 14px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 4px 20px #0000000b;
+    }
+    h1 { font-size: 23px; margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 0 0 16px; }
+    .subtitle, .hint {
+      font-size: 13px;
+      color: #718096;
+      line-height: 1.6;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 14px;
+      margin: 18px 0 8px;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #d7dfe9;
+      border-radius: 9px;
+      background: white;
+      color: #243247;
+    }
+    button {
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .primary, .secondary {
+      width: 100%;
+      padding: 14px;
+      margin-top: 18px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .primary {
+      background: #3979d7;
+      color: white;
+      border: none;
+    }
+    .secondary {
+      background: white;
+      color: #3979d7;
+      border: 1px solid #3979d7;
+    }
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+    .info {
+      padding: 15px;
+      margin-top: 20px;
+      background: #f0f6ff;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+    .hidden { display: none; }
+    .horse-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .horse {
+      min-height: 46px;
+      border-radius: 9px;
+      background: #f4f6f9;
+      border: 1px solid #d7dfe9;
+      color: #243247;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .horse:disabled {
+      background: #e5e7eb;
+      color: #9ca3af;
+      border-color: #e5e7eb;
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+    .section {
+      padding: 14px 0;
+      border-bottom: 1px solid #e7ecf2;
+    }
+    .section:last-child { border-bottom: none; }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 18px;
+      font-size: 15px;
+    }
+    .checkbox-row input {
+      width: 18px;
+      height: 18px;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .buttons button { margin-top: 0; }
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .error { color: #b42318; }
+    .summary {
+      padding: 16px;
+      margin-top: 20px;
+      background: #f0f6ff;
+      border-radius: 10px;
+      line-height: 1.8;
+      font-size: 14px;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+    /* 参加者情報バー */
+    .participant-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      background: #eef5ff;
+      border: 1px solid #c9ddff;
+      border-radius: 10px;
+    }
+
+    .participant-caption {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 3px;
+    }
+
+    .participant-switch {
+      width: auto;
+      flex: 0 0 auto;
+      padding: 8px 12px;
+      background: #fff;
+      color: #2563eb;
+      border: 1px solid #93c5fd;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* 参加者選択オーバーレイ */
+    .participant-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15, 23, 42, 0.65);
+    }
+
+    .participant-overlay[hidden] {
+      display: none;
+    }
+
+    .participant-dialog {
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      padding: 26px;
+      background: #fff;
+      color: #1f2937;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.2);
+    }
+
+    .participant-dialog h2 {
+      margin: 0 0 12px;
+    }
+
+    .participant-dialog select,
+    .participant-dialog > button {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 8px;
+    }
+
+    .participant-dialog select {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #1f2937;
+    }
+
+    .participant-dialog > button {
+      border: none;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .participant-dialog > button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .participant-error {
+      margin-top: 10px;
+      color: #dc2626;
+      font-size: 13px;
+    }
+
+    .participant-note {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 14px;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- 現在の参加者と所持通常pt -->
+  <div id="participantBar" class="participant-bar"
+      style="display:none;">
+    <div>
+      <div class="participant-caption">現在選択中の参加者</div>
+      <strong id="currentParticipantName"></strong>
+
+      <div style="margin-top:8px;">
+        <span class="participant-caption">所持通常pt：</span>
+        <strong id="currentNormalPt">読み込み中...</strong>
+      </div>
+    </div>
+
+    <button type="button"
+            class="participant-switch"
+            onclick="openParticipantSelection()">
+      切り替え
+    </button>
+  </div>
+
+
+  <!-- 参加者選択画面 -->
+  <div id="participantOverlay" class="participant-overlay">
+    <div class="participant-dialog">
+      <h2>フロンティア賞</h2>
+      <p>購入画面を利用する参加者を選択してください。</p>
+
+      <select id="participantSelect" disabled>
+        <option value="">読み込み中...</option>
+      </select>
+
+      <div id="participantError" class="participant-error"></div>
+
+      <button type="button"
+              id="participantStartButton"
+              onclick="confirmParticipant()"
+              disabled>
+        この参加者で始める
+      </button>
+
+      <p class="participant-note">
+        選択した参加者は、このブラウザに保存されます。
+      </p>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="card">
+    <h1>フロンティア賞</h1>
+    <div class="subtitle">
+      馬券予想大会 v0.9 
+    </div>
+
+    <!-- STEP 1 -->
+    <div id="step1">
+      <h2>① レース・券種を選択</h2>
+
+      <label>競馬場</label>
+      <select id="venue" disabled>
+        <option>レース情報取得中...</option>
+      </select>
+
+      <label>レース</label>
+      <select id="race" disabled></select>
+
+      <label>券種</label>
+      <select id="betType">
+        <option>単勝</option>
+        <option>複勝</option>
+        <option>馬連</option>
+        <option>馬単</option>
+        <option>ワイド</option>
+        <option>枠連</option>
+        <option>枠単</option>
+        <option>3連複</option>
+        <option>3連単</option>
+      </select>
+
+      <label>購入方式</label>
+      <select id="method"></select>
+
+      <div id="raceInfo" class="info">
+        読み込み中...
+      </div>
+      <div id="loadStatus" class="status"></div>
+
+      <button class="primary" id="nextButton"
+              onclick="goStep2()" disabled>
+        買い目の選択へ
+      </button>
+    </div>
+
+    <!-- STEP 2 -->
+    <div id="step2" class="hidden">
+      <div id="raceDeadlineStatus"
+          style="padding:10px;
+                  margin-bottom:12px;
+                  font-weight:bold;">
+        締切時刻を確認中...
+      </div>
+      <h2>② 買い目を選択</h2>
+      <div class="subtitle" id="selectedRace"></div>
+
+      <div id="flowSettings" class="hidden">
+        <label>軸の頭数</label>
+        <select id="axisCount" onchange="updateAxisSettings()">
+          <option value="1">1頭軸</option>
+          <option value="2">2頭軸</option>
+        </select>
+
+        <div id="positionArea">
+          <label>軸馬の着順</label>
+          <select id="axisPosition"
+                  onchange="updatePreview()"></select>
+        </div>
+      </div>
+
+      <div id="multiArea" class="hidden checkbox-row">
+        <input type="checkbox" id="multi"
+               onchange="updateMultiSettings()">
+        <span>マルチ指定</span>
+      </div>
+
+      <div id="horseSections"></div>
+
+      <label>1点あたりの購入pt</label>
+      <input id="pointPerBet" type="number"
+             min="100" step="100" value="100"
+             oninput="updatePreview()">
+
+      <div id="preview" class="summary"></div>
+
+      <div class="buttons">
+        <button class="secondary"
+                onclick="goStep1()">戻る</button>
+        <button class="primary"
+                onclick="showConfirmation()">
+          入力内容を確認
+        </button>
+      </div>
+    </div>
+
+    
+    <!-- STEP 3：購入確認 -->
+    <div id="step3" class="hidden">
+      <h2>③ 購入内容の確認</h2>
+
+      <div id="confirmation" class="summary"></div>
+
+      <div id="purchaseStatus"
+          style="margin-top:14px; white-space:pre-wrap;"></div>
+
+      <div class="buttons" id="purchaseActionButtons">
+        <button class="secondary"
+                type="button"
+                onclick="showStep(2)">
+          買い目の選択に戻る
+        </button>
+
+        <button class="primary"
+                type="button"
+                id="purchaseConfirmButton"
+                onclick="confirmWebPurchase()">
+          購入を確定する
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let races = [];
+let selectedRace = null;
+let groups = [];
+
+
+// 確認済みの購入データ
+let pendingWebPurchase = null;
+
+// 購入処理の状態
+let webPurchaseInProgress = false;
+let webPurchaseCompleted = false;
+
+/**
+ * Web画面から実際に購入する
+ */
+function confirmWebPurchase() {
+  if (webPurchaseInProgress || webPurchaseCompleted) {
+    return;
+  }
+
+  if (!currentWebParticipant || !pendingWebPurchase) {
+    alert("購入内容をもう一度確認してください。");
+    return;
+  }
+
+  if (
+    pendingWebPurchase.participantId !==
+    currentWebParticipant.id
+  ) {
+    alert("参加者が変更されています。再確認してください。");
+    return;
+  }
+
+  const data = {
+    ...pendingWebPurchase,
+    requestId: (
+      Date.now().toString(36) +
+      Math.random().toString(36).slice(2) +
+      Math.random().toString(36).slice(2)
+    )
+  };
+
+  const message =
+    `${currentWebParticipant.name} さんとして、\n` +
+    `${pendingWebPurchase.totalPurchase.toLocaleString()}pt` +
+    `分の馬券を購入します。\n\n` +
+    "購入を確定してよろしいですか？";
+
+  if (!confirm(message)) return;
+
+  webPurchaseInProgress = true;
+
+  const button = $("purchaseConfirmButton");
+  button.disabled = true;
+  button.textContent = "購入処理中...";
+
+  $("purchaseStatus").textContent =
+    "購入処理を実行しています。";
+
+  google.script.run
+    .withSuccessHandler(result => {
+      webPurchaseInProgress = false;
+      webPurchaseCompleted = true;
+
+      button.textContent = "購入完了";
+      button.disabled = true;
+
+      $("purchaseStatus").textContent =
+        "購入が完了しました！\n\n" +
+        `購入者：${result.participantName}\n` +
+        `購入点数：${result.ticketCount}点\n` +
+        `購入総額：${result.totalPurchase.toLocaleString()}pt\n` +
+        `購入後の通常pt：${result.remainingPt.toLocaleString()}pt`;
+
+      $("currentNormalPt").textContent =
+        result.remainingPt.toLocaleString() + "pt";
+
+      // 購入済みの内容を再利用しない
+      pendingWebPurchase = null;
+
+      // 再購入には新しく確認画面を開いてもらう
+      const backButton = document.querySelector(
+        "#purchaseActionButtons .secondary"
+      );
+      if (backButton) backButton.disabled = true;
+    })
+    .withFailureHandler(error => {
+      webPurchaseInProgress = false;
+
+      // 結果不明のため、同じ画面からは再購入させない
+      webPurchaseCompleted = true;
+      pendingWebPurchase = null;
+
+      button.disabled = true;
+      button.textContent = "購入履歴を確認してください";
+
+      $("purchaseStatus").textContent =
+        "購入が完了しませんでした。\n\n" +
+        error.message + "\n\n" +
+        "購入履歴を確認してください。";
+
+      refreshParticipantPoints();
+    })
+    .purchaseWebBet(data);
+}
+
+const $ = id => document.getElementById(id);
+
+const TYPE_SIZE = {
+  "単勝": 1, "複勝": 1,
+  "馬連": 2, "馬単": 2,
+  "ワイド": 2, "枠連": 2, "枠単": 2,
+  "3連複": 3, "3連単": 3
+};
+
+const ORDERED_TYPES = ["馬単", "枠単", "3連単"];
+const FRAME_TYPES = ["枠連", "枠単"];
+
+
+// 選択した参加者を保存するキー
+const PARTICIPANT_STORAGE_KEY =
+  "airbet_selected_participant_v1";
+
+// GASから取得した参加者一覧
+let webParticipants = [];
+
+// 現在選択されている参加者
+let currentWebParticipant = null;
+
+/**
+ * 保存済みIDを読み取る
+ */
+function getSavedParticipantId() {
+  try {
+    return localStorage.getItem(PARTICIPANT_STORAGE_KEY);
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * 参加者IDを保存
+ */
+function saveParticipantId(id) {
+  try {
+    localStorage.setItem(PARTICIPANT_STORAGE_KEY, id);
+  } catch (e) {
+    // 保存できない環境では今回の選択のみ有効
+    console.warn("参加者IDを保存できませんでした。");
+  }
+}
+
+/**
+ * 参加者一覧を読み込む
+ */
+function loadWebParticipants() {
+  google.script.run
+    .withSuccessHandler(participants => {
+      webParticipants = participants || [];
+
+      const select = document.getElementById(
+        "participantSelect"
+      );
+
+      select.replaceChildren();
+
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "参加者を選択してください";
+      select.appendChild(placeholder);
+
+      webParticipants.forEach(p => {
+        const option = document.createElement("option");
+        option.value = p.id;
+        option.textContent = p.name + " (" + p.id + ")";
+        select.appendChild(option);
+      });
+
+      select.disabled = webParticipants.length === 0;
+
+      if (webParticipants.length === 0) {
+        document.getElementById(
+          "participantError"
+        ).textContent = "参加者が登録されていません。";
+        return;
+      }
+
+      // 保存済みIDが現在の参加者一覧に存在するか確認
+      const savedId = getSavedParticipantId();
+
+      const savedParticipant = webParticipants.find(
+        p => p.id === savedId
+      );
+
+      if (savedParticipant) {
+        // 2回目以降は自動的に復元
+        setCurrentWebParticipant(savedParticipant);
+      } else {
+        // 初回は明示的に選んでもらう
+        openParticipantSelection();
+      }
+    })
+    .withFailureHandler(error => {
+      document.getElementById(
+        "participantError"
+      ).textContent =
+        "参加者一覧の取得に失敗しました：" +
+        error.message;
+    })
+    .getParticipantsForWeb();
+}
+
+/**
+ * 参加者を確定
+ */
+function setCurrentWebParticipant(participant) {
+  currentWebParticipant = participant;
+
+  saveParticipantId(participant.id);
+
+  document.getElementById(
+    "currentParticipantName"
+  ).textContent =
+    participant.name + " (" + participant.id + ")";
+
+  document.getElementById(
+    "participantBar"
+  ).style.display = "flex";
+
+  document.getElementById(
+    "participantOverlay"
+  ).hidden = true;
+  refreshParticipantPoints();
+}
+
+/**
+ * 参加者選択画面を開く
+ */
+function openParticipantSelection() {
+
+  if (webPurchaseInProgress) {
+    alert("購入処理中は参加者を切り替えられません。");
+    return;
+  }
+  const select = document.getElementById(
+    "participantSelect"
+  );
+
+  // 現在の参加者を初期選択
+  select.value = currentWebParticipant
+    ? currentWebParticipant.id
+    : "";
+
+  document.getElementById(
+    "participantStartButton"
+  ).disabled = !select.value;
+
+  document.getElementById(
+    "participantOverlay"
+  ).hidden = false;
+}
+
+/**
+ * 選択を確定する
+ */
+function confirmParticipant() {
+  const id = document.getElementById(
+    "participantSelect"
+  ).value;
+
+  const participant = webParticipants.find(
+    p => p.id === id
+  );
+
+  if (!participant) {
+    alert("参加者を選択してください。");
+    return;
+  }
+
+  // 参加者切り替え時は買い目入力をリセット
+  if (
+    currentWebParticipant &&
+    currentWebParticipant.id !== participant.id
+  ) {
+    groups = [];
+    pendingWebPurchase = null;
+    showStep(1);
+  }
+
+  setCurrentWebParticipant(participant);
+}
+
+// 選択すると確定ボタンを有効化
+document.getElementById(
+  "participantSelect"
+).addEventListener("change", function() {
+  document.getElementById(
+    "participantStartButton"
+  ).disabled = !this.value;
+});
+
+// ページ読み込み時に実行
+document.addEventListener(
+  "DOMContentLoaded",
+  loadWebParticipants
+);
+
+
+/**
+ * 所持通常ptを更新する
+ */
+function refreshParticipantPoints() {
+  if (!currentWebParticipant) return;
+
+  const participantId = currentWebParticipant.id;
+
+  $("currentNormalPt").textContent = "読み込み中...";
+
+  google.script.run
+    .withSuccessHandler(result => {
+      // 通信中に参加者が切り替わっていた場合は無視
+      if (
+        !currentWebParticipant ||
+        currentWebParticipant.id !== participantId
+      ) {
+        return;
+      }
+
+      $("currentNormalPt").textContent =
+        Number(result.normalPt).toLocaleString() + "pt";
+    })
+    .withFailureHandler(error => {
+      if (
+        !currentWebParticipant ||
+        currentWebParticipant.id !== participantId
+      ) {
+        return;
+      }
+
+      $("currentNormalPt").textContent =
+        "取得失敗：" + error.message;
+    })
+    .getWebParticipantPoints(participantId);
+}
+
+
+let webRaceClosed = true;
+let webDeadlineChecking = false;
+
+/**
+ * 選択レースの締切状態を確認
+ */
+function refreshWebRaceDeadline() {
+  if (!selectedRace || webDeadlineChecking) return;
+
+  const raceId = selectedRace.raceId;
+  webDeadlineChecking = true;
+
+  google.script.run
+    .withSuccessHandler(result => {
+      webDeadlineChecking = false;
+
+      // 通信中にレースが切り替わった場合は無視
+      if (
+        !selectedRace ||
+        selectedRace.raceId !== raceId
+      ) return;
+
+      webRaceClosed = result.closed;
+
+      const status = $("raceDeadlineStatus");
+
+      if (result.closed) {
+        status.textContent =
+          "締切済み：このレースの馬券は購入できません。";
+        status.style.color = "#dc2626";
+      } else {
+        status.textContent =
+          "購入受付中（発走予定：" +
+          result.deadlineText + "）";
+        status.style.color = "#15803d";
+      }
+
+      updateWebDeadlineButtons();
+    })
+    .withFailureHandler(error => {
+      webDeadlineChecking = false;
+      webRaceClosed = true;
+
+      $("raceDeadlineStatus").textContent =
+        "締切状態を確認できません：" +
+        error.message;
+
+      $("raceDeadlineStatus").style.color =
+        "#dc2626";
+
+      updateWebDeadlineButtons();
+    })
+    .checkWebRaceDeadline(raceId);
+}
+
+/**
+ * 締切済みの場合、購入操作を無効化
+ */
+function updateWebDeadlineButtons() {
+  const previewButton = document.querySelector(
+    '#step2 .buttons .primary'
+  );
+
+  if (previewButton) {
+    previewButton.disabled = webRaceClosed;
+  }
+
+  const purchaseButton = document.getElementById(
+    "purchaseConfirmButton"
+  );
+
+  if (purchaseButton && webRaceClosed) {
+    purchaseButton.disabled = true;
+  }
+}
+
+
+function loadCurrentWebUser() {
+  google.script.run
+    .withSuccessHandler(user => {
+      document.getElementById(
+        "currentUserInfo"
+      ).textContent =
+        `${user.participantName} さんの購入画面`;
+    })
+    .withFailureHandler(error => {
+      document.getElementById(
+        "currentUserInfo"
+      ).textContent =
+        "参加者情報を取得できません：" +
+        error.message;
+    })
+    .getWebCurrentUser(WEB_AUTH_KEY);
+}
+
+document.addEventListener(
+  "DOMContentLoaded",
+  loadCurrentWebUser
+);
+
+
+function option(select, value, text) {
+  const el = document.createElement("option");
+  el.value = value;
+  el.textContent = text;
+  select.appendChild(el);
+}
+
+function visible(id, show) {
+  $(id).classList.toggle("hidden", !show);
+}
+
+function showStep(number) {
+  for (let n = 1; n <= 3; n++) {
+    visible("step" + n, n === number);
+  }
+  window.scrollTo(0, 0);
+}
+
+function loadRaces() {
+  google.script.run
+    .withSuccessHandler(data => {
+      races = data || [];
+      $("venue").replaceChildren();
+
+      const venues = [...new Set(races.map(r => r.venue))];
+
+      for (const venue of venues) {
+        option($("venue"), venue, venue);
+      }
+
+      $("venue").disabled = venues.length === 0;
+      $("loadStatus").textContent =
+        `${races.length}レースを取得しました。`;
+
+      if (!venues.length) {
+        $("raceInfo").textContent =
+          "本日のレースは登録されていません。";
+        return;
+      }
+      updateRaces();
+    })
+    .withFailureHandler(error => {
+      $("loadStatus").textContent = error.message;
+      $("loadStatus").classList.add("error");
+    })
+    .getTodayRacesForWeb();
+}
+
+function updateRaces() {
+  const filtered = races.filter(
+    r => r.venue === $("venue").value
+  );
+
+  $("race").replaceChildren();
+
+  for (const r of filtered) {
+    option($("race"), r.raceId,
+      `${r.raceNumber}R ${r.name} (${r.startTime})`);
+  }
+
+  $("race").disabled = filtered.length === 0;
+  $("nextButton").disabled = filtered.length === 0;
+
+  updateRaceInfo();
+}
+
+function updateRaceInfo() {
+  const race = races.find(
+    r => r.raceId === $("race").value
+  );
+
+  selectedRace = race || null;
+
+  $("raceInfo").textContent = race
+    ? `${race.venue}${race.raceNumber}R｜${race.name}
+発走予定：${race.startTime}
+掲載頭数：${race.runnerCount}頭`
+    : "レースを選択してください。";
+}
+
+function updateMethods() {
+  const type = $("betType").value;
+  const select = $("method");
+  select.replaceChildren();
+
+  option(select, "通常", "通常");
+
+  if (TYPE_SIZE[type] >= 2) {
+    option(select, "ボックス", "ボックス");
+    option(select, "流し", "流し");
+    option(select, "フォーメーション", "フォーメーション");
+  }
+}
+
+function goStep1() {
+  showStep(1);
+}
+
+function goStep2() {
+  if (!selectedRace) return;
+
+  const type = $("betType").value;
+  const method = $("method").value;
+
+  $("selectedRace").textContent =
+    `${selectedRace.venue}${selectedRace.raceNumber}R`
+    + `｜${type}・${method}`;
+
+  groups = [];
+  $("multi").checked = false;
+
+  const canFlow = method === "流し";
+  const canMulti = canFlow && ORDERED_TYPES.includes(type);
+
+  visible("flowSettings", canFlow);
+  visible("multiArea", canMulti);
+
+  // 2連系の流しは1頭軸のみ
+  $("axisCount").replaceChildren();
+  option($("axisCount"), "1", "1頭軸");
+
+  if (TYPE_SIZE[type] === 3) {
+    option($("axisCount"), "2", "2頭軸");
+  }
+
+  updateAxisSettings();
+  showStep(2);
+  webRaceClosed = true;
+  refreshWebRaceDeadline();
+  // 15秒ごとに締切状態を確認
+  setInterval(refreshWebRaceDeadline, 15000);
+}
+
+function updateAxisSettings() {
+  const type = $("betType").value;
+  const method = $("method").value;
+  const axisCount = Number($("axisCount").value);
+
+  const positions = $("axisPosition");
+  positions.replaceChildren();
+
+  if (ORDERED_TYPES.includes(type) && method === "流し") {
+    if (type === "3連単" && axisCount === 2) {
+      option(positions, "1-2", "1・2着固定");
+      option(positions, "1-3", "1・3着固定");
+      option(positions, "2-3", "2・3着固定");
+    } else if (type === "3連単") {
+      option(positions, "1", "1着固定");
+      option(positions, "2", "2着固定");
+      option(positions, "3", "3着固定");
+    } else {
+      option(positions, "1", "1着固定");
+      option(positions, "2", "2着固定");
+    }
+  }
+
+  visible("positionArea",
+    method === "流し" && ORDERED_TYPES.includes(type)
+    && !$("multi").checked
+  );
+
+  renderHorseGroups();
+}
+
+function updateMultiSettings() {
+  const type = $("betType").value;
+  const method = $("method").value;
+
+  visible(
+    "positionArea",
+    method === "流し" &&
+    ORDERED_TYPES.includes(type) &&
+    !$("multi").checked
+  );
+
+  updatePreview();
+}
+
+
+/**
+ * 出走可能な馬番の一覧
+ */
+function getActiveHorseNumbers() {
+  if (!selectedRace) return [];
+
+  const excluded = new Set(
+    selectedRace.excludedNumbers || []
+  );
+
+  const pairs = selectedRace.framePairs || [];
+
+  // K列の馬番情報がある場合はこちらを優先
+  if (pairs.length > 0) {
+    return [...new Set(
+      pairs
+        .map(p => p.horse)
+        .filter(n => !excluded.has(n))
+    )].sort((a, b) => a - b);
+  }
+
+  // K列がない場合は掲載頭数から生成
+  const count = Number(selectedRace.runnerCount) || 0;
+
+  return Array.from(
+    {length: count}, (_, i) => i + 1
+  ).filter(n => !excluded.has(n));
+}
+
+/**
+ * 各枠の有効な出走頭数
+ */
+function getActiveFrameCounts() {
+  const counts = Array(9).fill(0);
+  if (!selectedRace) return counts;
+
+  const excluded = new Set(
+    selectedRace.excludedNumbers || []
+  );
+
+  for (const pair of selectedRace.framePairs || []) {
+    if (
+      !excluded.has(pair.horse) &&
+      pair.frame >= 1 &&
+      pair.frame <= 8
+    ) {
+      counts[pair.frame]++;
+    }
+  }
+
+  return counts;
+}
+
+/**
+ * 購入できる番号の一覧
+ */
+function getSelectableNumbers() {
+  const type = $("betType").value;
+
+  if (!FRAME_TYPES.includes(type)) {
+    return getActiveHorseNumbers();
+  }
+
+  const counts = getActiveFrameCounts();
+
+  return Array.from(
+    {length: 8}, (_, i) => i + 1
+  ).filter(n => counts[n] > 0);
+}
+
+
+function getGroupDefinitions() {
+  const type = $("betType").value;
+  const method = $("method").value;
+  const size = TYPE_SIZE[type];
+
+  if (method === "通常") {
+    return Array.from({length: size}, (_, i) => ({
+      label: size === 1 ? "対象馬" : `${i + 1}列目`,
+      max: 1
+    }));
+  }
+
+  if (method === "ボックス") {
+    return [{label: "ボックス対象", max: 99}];
+  }
+
+  if (method === "流し") {
+    const axisCount = Number($("axisCount").value);
+    return [
+      {label: `軸馬（${axisCount}頭）`, max: axisCount},
+      {label: "相手馬（複数選択）", max: 99}
+    ];
+  }
+
+  return Array.from({length: size}, (_, i) => ({
+    label: `${i + 1}列目の候補馬`, max: 99
+  }));
+}
+
+
+function renderHorseGroups() {
+  const definitions = getGroupDefinitions();
+
+  groups = definitions.map(d => ({
+    label: d.label,
+    max: d.max,
+    selected: []
+  }));
+
+  const container = $("horseSections");
+  container.replaceChildren();
+
+  const type = $("betType").value;
+  const isFrame = FRAME_TYPES.includes(type);
+
+  const activeNumbers = new Set(
+    getSelectableNumbers()
+  );
+
+  const frameCounts = getActiveFrameCounts();
+
+  const count = isFrame
+    ? 8
+    : (selectedRace.framePairs || []).length > 0
+      ? Math.max(
+          ...selectedRace.framePairs.map(p => p.horse)
+        )
+      : Number(selectedRace.runnerCount) || 0;
+
+  groups.forEach((group, groupIndex) => {
+    const section = document.createElement("div");
+    section.className = "section";
+
+    const label = document.createElement("label");
+    label.textContent = group.label;
+    section.appendChild(label);
+
+    const grid = document.createElement("div");
+    grid.className = "horse-grid";
+
+    for (let n = 1; n <= count; n++) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "horse";
+
+      const enabled = activeNumbers.has(n);
+      button.disabled = !enabled;
+
+      if (isFrame) {
+        button.textContent = `${n}枠`;
+        button.title = `有効出走馬：${frameCounts[n]}頭`;
+        button.dataset.number = String(n);
+      } else {
+        button.textContent = enabled ? String(n) : `${n} ×`;
+        button.title = enabled
+          ? `${n}番`
+          : `${n}番：選択不可`;
+        button.dataset.number = String(n);
+      }
+
+      button.addEventListener("click", () => {
+        toggleNumber(groupIndex, n);
+      });
+
+      grid.appendChild(button);
+    }
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+
+  updatePreview();
+}
+
+
+function toggleNumber(groupIndex, number) {
+  const group = groups[groupIndex];
+  const index = group.selected.indexOf(number);
+
+  if (index >= 0) {
+    group.selected.splice(index, 1);
+  } else {
+    if (group.max === 1) {
+      group.selected = [number];
+    } else if (group.selected.length < group.max) {
+      group.selected.push(number);
+    }
+  }
+
+  // 3連単の2頭軸流しでは、選択順を保持する
+  const keepAxisOrder =
+    $("betType").value === "3連単" &&
+    $("method").value === "流し" &&
+    Number($("axisCount").value) === 2 &&
+    groupIndex === 0;
+
+  if (!keepAxisOrder) {
+    group.selected.sort((a, b) => a - b);
+  }
+
+  // 通常と流しでは、別の役割に同一馬を重複指定しない（枠連枠単のゾロ目のみ例外）
+  const method = $("method").value;
+  const type = $("betType").value;
+
+  const allowSameFrame =
+    FRAME_TYPES.includes(type) &&
+    method === "通常" &&
+    getActiveFrameCounts()[number] >= 2;
+
+  // ゾロ目として有効な枠以外は重複を解除
+  if (
+    index < 0 &&
+    ["通常", "流し"].includes(method) &&
+    !allowSameFrame
+  ) {
+    groups.forEach((other, i) => {
+      if (i !== groupIndex) {
+        other.selected =
+          other.selected.filter(x => x !== number);
+      }
+    });
+  }
+
+
+  refreshButtons();
+  updatePreview();
+}
+
+
+function refreshButtons() {
+  const sections = $("horseSections")
+    .querySelectorAll(".section");
+
+  sections.forEach((section, i) => {
+    section.querySelectorAll(".horse").forEach(button => {
+      const number = Number(button.dataset.number);
+      const isSelected = groups[i].selected.includes(number);
+
+      // CSSクラスも更新
+      button.classList.toggle("selected", isSelected);
+
+      // ボタンの色を直接指定
+      if (isSelected) {
+        button.style.backgroundColor = "#3979d7";
+        button.style.color = "#ffffff";
+        button.style.border = "2px solid #1455a7";
+      } else {
+        button.style.backgroundColor = "";
+        button.style.color = "";
+        button.style.border = "";
+      }
+    });
+  });
+}
+
+
+
+function getSelectionData() {
+  return {
+    raceId: selectedRace.raceId,
+    venue: selectedRace.venue,
+    raceNumber: selectedRace.raceNumber,
+    betType: $("betType").value,
+    method: $("method").value,
+    axisCount: $("method").value === "流し"
+      ? Number($("axisCount").value) : null,
+    axisPosition: $("method").value === "流し"
+      && ORDERED_TYPES.includes($("betType").value)
+      ? $("axisPosition").value : null,
+    multi: $("multi").checked,
+    groups: groups.map(g => [...g.selected]),
+    pointPerBet: Number($("pointPerBet").value)
+  };
+}
+
+function summaryText(data) {
+  const lines = [
+    `${data.venue}${data.raceNumber}R`,
+    `${data.betType}｜${data.method}`
+      + (data.multi ? "（マルチ）" : "")
+  ];
+
+  if (data.axisCount !== null) {
+    lines.push(`軸：${data.axisCount}頭`);
+  }
+  if (data.axisPosition) {
+    lines.push(`軸位置：${data.axisPosition}`);
+  }
+
+  groups.forEach((group, i) => {
+    lines.push(
+      `${group.label}：${data.groups[i].join(", ") || "未選択"}`
+    );
+  });
+
+  lines.push(
+    `1点あたり：${Number.isFinite(data.pointPerBet)
+      ? data.pointPerBet.toLocaleString("ja-JP") : "未入力"}pt`
+  );
+
+  return lines.join("\n");
+}
+
+function updatePreview() {
+  const data = getSelectionData();
+  let text = summaryText(data);
+
+  if (
+    data.betType === "3連単" &&
+    data.method === "流し" &&
+    data.axisCount === 2 &&
+    data.groups[0].length === 2
+  ) {
+    const positions = (data.axisPosition || "1-2")
+      .split("-");
+
+    text += "\n\n【軸馬の着順対応】";
+    text += `\n${positions[0]}着：${data.groups[0][0]}番`;
+    text += `\n${positions[1]}着：${data.groups[0][1]}番`;
+
+    if (data.multi) {
+      text += "\n※マルチでは着順を入れ替えて購入";
+    }
+  }
+
+  $("preview").textContent = text;
+}
+
+function showConfirmation() {
+  const data = getSelectionData();
+
+  if (!currentWebParticipant) {
+    alert("先に参加者を選択してください。");
+    openParticipantSelection();
+    return;
+  }
+
+  data.participantId = currentWebParticipant.id;
+
+  if (data.groups.some(g => g.length === 0)) {
+    alert("必要な馬番・枠番を選択してください。");
+    return;
+  }
+
+  if (!Number.isSafeInteger(data.pointPerBet) ||
+      data.pointPerBet <= 0 ||
+      data.pointPerBet % 100 !== 0) {
+    alert("購入ptは100pt単位で指定してください。");
+    return;
+  }
+
+  if (data.axisCount !== null &&
+      data.groups[0].length !== data.axisCount) {
+    alert("軸馬を指定頭数だけ選択してください。");
+    return;
+  }
+
+  const button = document.querySelector(
+    '#step2 .buttons .primary'
+  );
+
+  button.disabled = true;
+  button.textContent = "計算中...";
+
+  google.script.run
+    .withSuccessHandler(result => {
+      button.disabled = false;
+      button.textContent = "入力内容を確認";
+
+      const text = [
+        `【購入する参加者】`,
+        `${currentWebParticipant.name} (${currentWebParticipant.id})`,
+        "",
+        summaryText(data),
+        "",
+        "【購入内容】",
+        `購入方式：${result.method}`,
+        `買い目：${result.selection}`,
+        "",
+        `購入点数：${result.ticketCount}点`,
+        `1点あたり：${result.pointPerBet.toLocaleString()}pt`,
+        `合計：${result.totalPurchase.toLocaleString()}pt`,
+        "",
+        "※まだ購入は確定していません。"
+      ];
+
+      $("confirmation").textContent = text.join("\n");
+
+      // 確認画面に表示した購入内容を保存
+      pendingWebPurchase = {
+        ...data,
+        participantId: currentWebParticipant.id,
+        totalPurchase: result.totalPurchase
+      };
+
+      webPurchaseInProgress = false;
+      webPurchaseCompleted = false;
+
+      $("purchaseConfirmButton").disabled = false;
+      $("purchaseConfirmButton").textContent = "購入を確定する";
+      $("purchaseStatus").textContent = "";
+
+      const backButton = document.querySelector(
+        "#purchaseActionButtons .secondary"
+      );
+
+      if (backButton) backButton.disabled = false;
+      showStep(3);
+    })
+    .withFailureHandler(error => {
+      button.disabled = false;
+      button.textContent = "入力内容を確認";
+
+      alert("買い目の計算に失敗しました。\n" +
+            error.message);
+    })
+    .previewWebBet(data);
+}
+
+
+$("venue").addEventListener("change", updateRaces);
+$("race").addEventListener("change", updateRaceInfo);
+$("betType").addEventListener("change", updateMethods);
+
+updateMethods();
+loadRaces();
+</script>
+</body>
+</html>
