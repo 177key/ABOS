@@ -75,9 +75,28 @@ Python側の依存パッケージは `discord-bot/requirements.txt` に記載し
 
 GAS側はスプレッドシート・トリガー・スクリプトプロパティ等の外部設定に依存します。したがって、**このリポジトリをクローンしただけでは動作しません**。
 
-## デモ
+## 動作画面
 
-**TODO（公開前に追加）**：個人情報や本番URLを隠した購入画面のスクリーンショット、Discord通知の例、短い操作動画を掲載する。
+### 1. レース・券種の選択
+競馬場、レース、券種、購入方式を選択して購入内容を指定します。
+※「フロンティア賞」は大会名の例です
+
+<img src="docs/screenshots/race-select.png" width="400">
+
+### 2. 買い目の入力
+券種や購入方式に応じて入力UIを切り替え、馬番を選択して買い目を入力できます。
+
+<img src="docs/screenshots/bet-select.png" width="400">
+
+### 3. 購入受付通知
+購入した馬券の内容はDiscordに通知され、購入点数・購入総額・購入後の通常ptなどを確認できます。
+
+<img src="docs/screenshots/purchase-notice.png" width="350">
+
+### 4. 精算結果通知
+レース確定後、払戻情報をもとに自動で精算を行い、収支や精算後の通常ptをDiscordに通知します。
+
+<img src="docs/screenshots/settlement-notice.png" width="450">
 
 ## 現時点の制約・改善候補
 
