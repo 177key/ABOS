@@ -81,7 +81,7 @@ GAS側はスプレッドシート・トリガー・スクリプトプロパテ�
 競馬場、レース、券種、購入方式を選択して購入内容を指定します。
 ※「フロンティア賞」は大会名の例です
 
-<img src="docs/screenshots/race-select.png" width="400">
+<img src="docs/screenshots/race-select-updated.png" width="400">
 
 ### 2. 買い目の入力
 券種や購入方式に応じて入力UIを切り替え、馬番を選択して買い目を入力できます。
